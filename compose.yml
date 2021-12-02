@@ -1,0 +1,7 @@
+services:
+  karzok:
+    build:
+      context: .
+    container_name: karzok
+    ports:
+      - 3000:80

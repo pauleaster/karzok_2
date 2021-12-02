@@ -1,0 +1,141 @@
+<!-- header  -->
+<!-- It's hack -->
+{% macro header(current_url) %}
+{% set current_link = current_url | safe | trim_end_matches(pat="/")  %}
+<header class="header">
+    <nav aria-label="section navigation" class="header__nav" itemscope itemtype="http://shema.org/SiteNavigationElement">
+        <ul class="header__right">
+            <li class="header__list-item">
+                <a class="header__link {% if current_link == config.base_url %} header__link-active {% endif %} {% if config.extra.logotype %}header__logotype-link {%endif%}" href="{{ config.base_url | safe }}">
+                    {% if config.extra.logotype %}
+                    <img class="header__logotype" width="31" height="31" alt="favicon" src="{{ get_url(path=config.extra.logotype)}}" />
+                    {% else %}
+                    <span class="header__link-text"> {{ config.extra.header.name | default(value="Home") }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            {% if config.extra.header_left %}
+            {% for item in config.extra.header_left %}
+            {% set val_link = item.link  | replace(from="$base_url", to=config.base_url) %}
+            <li class="header__list-item">
+                <a itemprop="url" class="header__link {% if current_link == val_link %} header__link-active {% endif %}" href="{{ val_link | safe }}">
+                    <span class="header__link-text"> {{ item.text }} </span>
+                </a>
+            </li>
+            {% endfor %}
+            {% endif %}
+        </ul>
+        	{% if config.build_search_index %}
+            <form class="header__center">
+                <input id="userinput" class="header__center-input"  type="search" placeholder="Search ..."
+						aria-label="Search ..." autocomplete="off">
+                <button type="submit" title="Submit your search query." class="header__center header__center-svg">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"  preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M29 27.586l-7.552-7.552a11.018 11.018 0 1 0-1.414 1.414L27.586 29zM4 13a9 9 0 1 1 9 9a9.01 9.01 0 0 1-9-9z" fill="currentColor"></path></svg>
+                </button>
+                <div id="suggestions" class="header__center-suggestions"></div>
+				</form>
+			{% endif %}
+        {% if config.extra.header_right %}
+            <ul class="header__left">
+            {% for item in config.extra.header_right %}
+            {% set item_link = item.link | replace(from = "$base_url", to=config.base_url) %}
+                <li class="header__list-item">
+                    <a itemprop="url" class="header__link header__link-vector" href=" {{ item_link | safe }} ">
+                    {% if item.svg %}
+                        <span class="header__svg">
+                            {{ item.svg | safe }}
+                        </span>
+                    {% endif %}
+                    {% if item.text %}
+                        <span class="header__link-text"> {{ item.text }} </span>
+                    {% endif %}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if config.extra.devmode %}
+            <button id="mode" type="button" aria-label="Toggle mode">Dark Mode</button>
+        {% endif %}
+    </nav>
+</header>
+{% if config.extra.devmode %}
+<div class="header__container">
+    <a itemprop="url" class="header__container-link" href="/zero">
+    <span class="header__container-svg">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--simple-line-icons" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1024 1024"><path d="M768 0H416q-27 0-45.5 18.5T352 64h352v256h256v512H736v64h224q27 0 45.5-18.5T1024 832V256zm0 256V90l165 166H768zM64 128q-27 0-45.5 18.5T0 192v768q0 27 18.5 45.5T64 1024h544q27 0 45.5-18.5T672 960V384L416 128H64zm544 832H64V192h288v256h256v512zM416 384V218l165 166H416z" fill="currentColor"></path></svg>
+    </span>
+     <div class="header__container-column">
+     <h3 class="header__container-title"> zero </h3>
+     <p class="header__container-description"> is a number </p>
+     </div>
+    </a>
+</div>
+{% endif %}
+{% endmacro %}
+
+<!-- footer in the page -->
+{% macro footer() %}
+{% if config.extra.version and not config.extra.footer %}
+ <script>
+    fetch('{{ config.extra.version | safe }}')
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            let version_name = data.name;
+            let html_url = data.html_url;
+                   version.innerHTML = `<a class="footer-a" href='${html_url}'>${version_name}</a>`;
+          });
+</script>
+{%endif%}
+<footer class="footer">
+        <ul>
+            {% if config.extra.footer %}
+            {% for item in config.extra.footer%}
+            <li><span class="footer-span">{% if item.url %}<a href="{{ item.url }}"/> {% endif %}{{ item.text }}</span></li>
+            {% endfor %}
+            {% else %}
+            <span class = "footer-span"> powered by  <a class="footer-a" href="https://fmatch.org/karzok"> karzok </a></span>
+            <span class = "footer-span"><span id="version"></span></span>
+            {% endif %}
+        </ul>
+</footer>
+{% endmacro %}
+{% macro title_or_last(component, offset=2) %}
+    {% set length = component.components | length %}
+    {% set last = component.components | last %}
+    {{ component.title | default(value=name) }}
+{% endmacro title_or_last %}
+<!-- Math liblary - katex enable -->
+{% macro math() %}
+{% if page.extra.math or section.extra.math or config.extra.math %}
+        {% if config.extra.localcdn %}
+        <link rel="stylesheet" href="{{ get_url(path='katex/dist/katex.min.css') }}">
+        <script defer src="{{ get_url(path='katex/dist/katex.min.js') }}"></script>
+        <script defer src="{{ get_url(path='katex/dist/contrib/auto-render.min.js') }}"></script>
+        <script defer src="{{ get_url(path='katex/dist/contrib/mathtex-script-type.min.js') }}"></script>
+        {% else %}
+        {% set cdnurl = config.extra.cdnurl | default(value="https://cdn.jsdelivr.net/npm/") %}
+        <link rel="stylesheet" href="{{ cdnurl | safe }}katex/dist/katex.min.css">
+        <script defer src="{{ cdnurl | safe }}katex/dist/katex.min.js"></script>
+        <script defer src="{{ cdnurl | safe }}katex/dist/contrib/auto-render.min.js"></script>
+        <script defer src="{{ cdnurl | safe }}katex/dist/contrib/mathtex-script-type.min.js"></script>
+        {% endif %}
+        <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          // customised options
+          // • auto-render specific keys, e.g.:
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false}
+            ],
+          // • rendering keys, e.g.:
+          throwOnError : false,
+          strict: false
+        });
+    });
+</script>
+        {% endif %}
+{% endmacro %}

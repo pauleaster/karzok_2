@@ -1,0 +1,45 @@
+.sidebar {
+  position: sticky;
+  top: 1rem;
+  padding-left: 0;
+  height: calc(110vh - 1rem);
+  border-right: 1px solid $black;
+  max-height: 100vh;
+  overflow-y: auto;
+  width: 350px;
+  &__pages {
+    margin-left: 0.5rem;
+    margin-top: 1em;
+    &-link {
+        margin-top: 1em;
+    }
+  }
+  &__subsection {
+    margin-left: 0.5rem;
+    &-page {
+        margin-left: 0.5em;
+        margin-top: 1em;
+        color: $dark3;
+    }
+  }
+  &-link {
+    display: flex;
+    text-align: left;
+    &-a {
+        margin-top: 1em;
+    }
+    &::before {
+        content: '';
+        margin-right: 1.5em;
+        border-left: 1px solid $black;
+    }
+  }
+  &__active-pages,
+  &-link:hover,&__pages:hover{
+    color: $green;
+    border-right: 1px solid $green;
+  }
+  &__active-link {
+    color: $green;
+  }
+}

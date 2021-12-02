@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block htmltitle %}
+    {{ macros::title_or_last(component=section) }} - {{ config.title }}
+{% endblock htmltitle %}
+
+{% block title %}
+    {{ macros::title_or_last(component=section) }}
+{% endblock title %}
+
+{% block math %}
+{{ macros::math() }}
+{% endblock math %}
+{% block content %}
+<section class="menu">
+{% for page in section.pages %}
+    <a class="menu__link" href="{{ page.permalink }}">
+        <span class="menu__link-title">{{ macros::title_or_last(component=page, offset=0) }}</span>
+         <div class="menu__link-in">
+         {% if page.date %}
+            <time class="menu__link-time"> {{page.date}} </time>
+         {% endif %}
+         {% if page.description %}
+            <p> {{ page.description }} </p>
+         {% endif %}
+        </div>
+    </a>
+{% endfor %}
+</section>
+{% endblock content %}

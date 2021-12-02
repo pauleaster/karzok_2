@@ -1,0 +1,16 @@
+.footer {
+  display: block;
+  width: 100%;
+  background-color: $white;
+  border-top: 2px solid;
+  border-color: $black;
+  color: $black;
+  &-span {
+    padding-left: 1em;
+    font-size: 18px;
+    margin-right: 25%;
+  }
+  &-a {
+    color: $black;
+  }
+}
